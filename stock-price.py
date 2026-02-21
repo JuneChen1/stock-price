@@ -22,7 +22,9 @@ def getStockInfo(symbol):
 def getStockPrice(symbol):
   temp = getStockInfo(symbol)
   if temp == 'Not Found':
-    return 'Not Found'
+      price = 'Not Found'
+      name = 'Not Found'
+      return price, name
   
   url = 'https://mis.twse.com.tw/stock/api/getStockInfo.jsp'
   payload = {
@@ -37,6 +39,16 @@ def getStockPrice(symbol):
     data = response.json()
     try:
       price = data['msgArray'][0]['pz']
+      name = data['msgArray'][0]['n']
     except:
       price = 'Not Found'
-  return price 
+      name = 'Not Found'
+  return price, name
+
+symbol = input('股票代號：')
+price, name = getStockPrice(symbol)
+if price == 'Not Found' and name == 'Not Found':
+  print('查無此股票代號')
+else:
+  print('股票名稱：', name, sep='')
+  print('股價：', f"{float(price):.2f}", sep='')
