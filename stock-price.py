@@ -1,35 +1,42 @@
 import requests
 import datetime
-import math
+import time
 
-time = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+currentTime = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
 
 def getStockInfo(symbol):
   url = 'https://mis.twse.com.tw/stock/api/getStockNames.jsp?'
   payload = {
     'n': str(symbol),
-    '_': time
+    '_': currentTime
   }
   response = requests.get(url, params=payload)
   if response.status_code == 200:
     data = response.json()
-    result = data['datas'][0]['key'][:4]
+    try:
+      result = data['datas'][0]['key'][:4]
+    except:
+      result = 'Not Found'
   return result
 
 def getStockPrice(symbol):
   temp = getStockInfo(symbol)
+  if temp == 'Not Found':
+    return 'Not Found'
+  
   url = 'https://mis.twse.com.tw/stock/api/getStockInfo.jsp'
   payload = {
     'ex_ch': temp + str(symbol) + '.tw',
     'json': '1',
     'delay': '0',
-    '_': time
+    '_': currentTime
   }
+  time.sleep(5)
   response = requests.get(url, params=payload)
   if response.status_code == 200:
     data = response.json()
-    price = data['msgArray'][0]['pz']
+    try:
+      price = data['msgArray'][0]['pz']
+    except:
+      price = 'Not Found'
   return price 
-
-price = getStockPrice('0050')
-print(price)
